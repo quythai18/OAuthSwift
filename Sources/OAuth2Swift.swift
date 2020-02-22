@@ -231,7 +231,17 @@ open class OAuth2Swift: OAuthSwift {
                 this.client.credential.oauthTokenExpiresAt = Date(timeInterval: expiresIn, since: Date())
             }
 
+			// quy test
+			#if DEBUG
+			// get a token from post man and update here
+			let token = """
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlFVRTBRakEwUTBZM01rVkNOVVkzUlRZMFJUTkJSVUUxUVRFME1Ua3dSVUkyTmtFM1JEQTJOdyJ9.eyJpc3MiOiJodHRwczovL2F1dGgtZGV2LnFzcnVsdXJ1ZGV2LmNvbS8iLCJzdWIiOiJhdXRoMHw1ZTIwMWRhNDVhMTkyMzBlYWRkNzcwZTgiLCJhdWQiOlsiaHR0cHM6Ly91bHVydS1kZXYtYXBpLmF6dXJlLWFwaS5uZXQiLCJodHRwczovL3FzcnVsdXJ1ZGV2LmV1LmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE1ODIzNTcwNDIsImV4cCI6MTU4MjM2NDI0MiwiYXpwIjoicWw3MjAxRWx5VGlTMTdkMjVKWWcxSEtaYWhVTlFEMkoiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIGFkZHJlc3MgcGhvbmUgY3JlYXRlOmN1cnJlbmNpZXMgcmVhZDpjdXJyZW5jaWVzIHVwZGF0ZTpjdXJyZW5jaWVzIGRlbGV0ZTpjdXJyZW5jaWVzIiwiZ3R5IjoicGFzc3dvcmQifQ.eYDmPYa9TyiuEzNur_ABNPO8RryTlsepT-kLDWFpvXn8NcY8CUThKNjoW_lITJb6h2Upze4n2P84FDvA9uN-mY4F48m2aJBNMYIsOjf5U4cxtdEjdpqwKU2reRqqbR6xgS3NBRLATMOGXiGYhIbgnJKqoLSIRWVCkLydCDR0SzFdj5r9P43Iwq5SVZytO_U_SJ-Pee5PGWzFERAKdb_IorOP8v4CmOI7tGGxqDuoK-o845v5bEijFozvY47E1krypcwPubQM9bodCdq45-ClQxNL1sCRUNIsmsxeyT6UyLvuDED96X6QXObXDv-QaQDQOdGas7D1rOyNbjNduQN__Q
+"""
+			this.client.credential.oauthToken = token.safeStringByRemovingPercentEncoding
+			// quy test
+			#else
             this.client.credential.oauthToken = accessToken.safeStringByRemovingPercentEncoding
+			#endif
             success(this.client.credential, response, responseParameters)
         }
 
@@ -254,9 +264,16 @@ open class OAuth2Swift: OAuthSwift {
                     finalHeaders += ["Authorization": "Basic \(base64Encoded)"] as OAuthSwift.Headers
                 }
             }
-
-            // Request new access token by disabling check on current token expiration. This is safe because the implementation wants the user to retrieve a new token.
-            return self.client.request(accessTokenUrl, method: .POST, parameters: parameters, headers: finalHeaders, checkTokenExpiration: false, success: successHandler, failure: failure)
+			// quy test
+			#if DEBUG
+			// I try to make it work as post man but the response token seem to be not correct ;(
+			let jsonData = try? JSONSerialization.data(withJSONObject: parameters)
+			return self.client.request(accessTokenUrl, method: .POST, parameters: [:], headers: finalHeaders, body: jsonData, checkTokenExpiration: false, success: successHandler, failure: failure)
+			// quy test
+			#else
+			// Request new access token by disabling check on current token expiration. This is safe because the implementation wants the user to retrieve a new token.
+			return self.client.request(accessTokenUrl, method: .POST, parameters: parameters, headers: finalHeaders, checkTokenExpiration: false, success: successHandler, failure: failure)
+			#endif
         }
     }
 
@@ -305,8 +322,8 @@ open class OAuth2Swift: OAuthSwift {
     open func authorize(username: String, password: String, scope: String?, headers: OAuthSwift.Headers? = nil, success: @escaping TokenSuccessHandler, failure: @escaping OAuthSwiftHTTPRequest.FailureHandler) -> OAuthSwiftRequestHandle? {
 
         var parameters = OAuthSwift.Parameters()
-        parameters["client_id"] = self.consumerKey
-        parameters["client_secret"] = self.consumerSecret
+        parameters["client_id"] = "ql7201ElyTiS17d25JYg1HKZahUNQD2J"
+        parameters["client_secret"] = "ZUsXzXBXqOeD1sikVckCYU4RwtxXeTMOwPVVzsO7nUngSgrc8slgafuEUxtdy-V0"
         parameters["username"] = username
         parameters["password"] = password
         parameters["grant_type"] = "password"
